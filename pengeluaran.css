@@ -1,0 +1,131 @@
+/* CSS untuk tampilan modal popup */
+.popup, .modal {
+    display: none; /* Sembunyikan secara default */
+    position: fixed; /* Tetap di tempat saat scroll */
+    z-index: 100; /* Di atas elemen lainnya */
+    left: 0; /* Posisikan dari kiri */
+    top: 0; /* Posisikan dari atas */
+    width: 100%; /* Lebar 100% dari layar */
+    height: 100%; /* Tinggi 100% dari layar */
+    background-color: rgba(0, 0, 0, 0.8); /* Latar belakang gelap dengan transparansi */
+    justify-content: center; /* Pusatkan konten secara horizontal */
+    align-items: center; /* Pusatkan konten secara vertikal */
+    transition: opacity 0.3s ease; /* Transisi untuk efek fade */
+}
+
+/* Tampilan konten di dalam modal */
+.popup-content, .modal-content {
+    background-color: #ffffff; /* Warna latar belakang putih */
+    padding: 30px; /* Jarak dalam */
+    border-radius: 12px; /* Sudut melengkung */
+    max-width: 500px; /* Lebar maksimum */
+    width: 90%; /* Lebar 90% dari layar */
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2); /* Bayangan */
+    text-align: center; /* Rata tengah */
+    position: relative; /* Posisi relatif untuk elemen anak */
+    animation: slideUp 0.5s ease-out; /* Animasi masuk */
+}
+
+/* Animasi pop-up masuk */
+@keyframes slideUp {
+    from {
+        transform: translateY(50px); /* Mulai dari bawah */
+        opacity: 0; /* Transparan */
+    }
+    to {
+        transform: translateY(0); /* Ke posisi normal */
+        opacity: 1; /* Sepenuhnya terlihat */
+    }
+}
+
+/* Styling judul */
+h2 {
+    color: #333; /* Warna teks */
+    font-size: 24px; /* Ukuran font */
+    margin-bottom: 20px; /* Jarak bawah */
+    font-weight: bold; /* Tebal */
+}
+
+/* Styling label dan input form */
+label {
+    display: block; /* Menampilkan sebagai blok */
+    font-size: 16px; /* Ukuran font */
+    margin-bottom: 8px; /* Jarak bawah */
+    color: #333; /* Warna teks */
+    text-align: left; /* Rata kiri */
+}
+
+input[type="number"], input[type="text"], input[type="date"], input[type="password"] {
+    width: 100%; /* Lebar 100% dari kontainer */
+    padding: 10px; /* Jarak dalam */
+    margin-bottom: 20px; /* Jarak bawah */
+    border: 1px solid #ccc; /* Border */
+    border-radius: 8px; /* Sudut melengkung */
+    font-size: 16px; /* Ukuran font */
+    color: #333; /* Warna teks */
+    background-color: #f9f9f9; /* Warna latar belakang input */
+    transition: all 0.3s ease; /* Transisi untuk efek */
+}
+
+input:focus {
+    outline: none; /* Menghilangkan outline default */
+    border-color: #4CAF50; /* Warna border saat fokus */
+    background-color: #fff; /* Warna latar belakang saat fokus */
+}
+
+/* Button styling */
+.button-group {
+    display: flex; /* Flexbox untuk tombol */
+    justify-content: space-between; /* Ruang antara tombol */
+    gap: 10px; /* Jarak antara tombol */
+}
+
+button {
+    padding: 12px 20px; /* Jarak dalam */
+    font-size: 16px; /* Ukuran font */
+    font-weight: bold; /* Tebal */
+    border: none; /* Tidak ada border */
+    border-radius: 8px; /* Sudut melengkung */
+    cursor: pointer; /* Tangan saat hover */
+    transition: background-color 0.3s ease; /* Transisi untuk efek */
+}
+
+button:hover {
+    background-color: #45a049; /* Warna lebih gelap saat hover */
+}
+
+.btn-submit {
+    background-color: #4CAF50; /* Warna latar belakang hijau */
+    color: white; /* Warna teks putih */
+}
+
+.btn-close {
+    background-color: #f44336; /* Warna latar belakang merah */
+    color: white; /* Warna teks putih */
+}
+
+.btn-verify {
+    background-color: #2196F3; /* Warna latar belakang biru */
+    color: white; /* Warna teks putih */
+}
+
+.close-pin {
+    position: absolute; /* Posisi absolut */
+    top: 15px; /* Jarak dari atas */
+    right: 20px; /* Jarak dari kanan */
+    font-size: 24px; /* Ukuran font */
+    color: #333; /* Warna teks */
+    cursor: pointer; /* Tangan saat hover */
+    transition: color 0.3s ease; /* Transisi untuk efek */
+}
+
+.close-pin:hover {
+    color: #f44336; /* Warna saat hover */
+}
+
+/* Responsif untuk layar lebih kecil */
+@media only screen and (max-width: 600px) {
+    .popup-content, .modal-content {
+        width: 90%; /* Lebar 90% untuk layar kecil */
+    }
+}

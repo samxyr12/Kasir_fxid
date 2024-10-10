@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Daftar Barang</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+    <link rel="stylesheet" href="kasir.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .action-btn {
+            cursor: pointer;
+            border: none;
+            background: #007bff;
+            color: #fff;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin: 0 5px;
+        }
+
+        .action-btn:hover {
+            background-color: #0056b3;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #007bff;
+            color: #fff;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .edit-btn {
+            background-color: #28a745;
+            border-radius: 5px;
+            padding: 8px 12px;
+            margin-right: 5px;
+        }
+
+        .edit-btn:hover {
+            background-color: #218838;
+        }
+
+        .delete-btn {
+            background-color: #dc3545;
+            border-radius: 5px;
+            padding: 8px 12px;
+        }
+
+        .delete-btn:hover {
+            background-color: #c82333;
+        }
+
+        .fa-edit, .fa-trash-alt, .fa-download, .fa-upload {
+            margin-right: 5px;
+        }
+
+        #uploadExcel {
+            display: none; /* Sembunyikan input file */
+        }
+        
+        
+           .icon-kembali {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    display: inline-block;
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    border-radius: 50%;
+    text-decoration: none;
+    font-size: 24px;
+    transition: background-color 0.3s;
+    z-index: 1000;
+}
+
+.icon-kembali:hover {
+    background-color: #0056b3;
+}
+
+.icon-kembali i {
+    margin: 0;
+}
+ 
+    
+
+    /* Kustomisasi SweetAlert2 Popup */
+    .swal2-popup {
+        background-color: #fff; /* Warna latar belakang pop-up */
+        border-radius: 10px; /* Sudut membulat untuk pop-up */
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); /* Bayangan */
+        padding: 20px; /* Jarak dalam pop-up */
+    }
+
+    /* Kustomisasi Judul */
+    .swal2-title {
+        color: #333; /* Warna judul */
+        font-size: 1.5em; /* Ukuran font judul */
+        margin-bottom: 15px; /* Jarak bawah judul */
+        text-align: center; /* Rata tengah */
+    }
+
+    /* Kustomisasi Input */
+    .swal2-input {
+        width: 100%; /* Lebar penuh untuk input */
+        border: 1px solid #ccc; /* Border input */
+        border-radius: 5px; /* Sudut membulat untuk input */
+        padding: 10px; /* Jarak dalam input */
+        margin: 5px 0; /* Jarak antar input */
+        font-size: 1em; /* Ukuran font dalam input */
+        transition: border-color 0.3s; /* Transisi warna border */
+    }
+
+    /* Mengubah border input saat fokus */
+    .swal2-input:focus {
+        border-color: #4CAF50; /* Warna border saat fokus */
+        outline: none; /* Hilangkan outline default */
+        box-shadow: 0 0 5px rgba(76, 175, 80, 0.5); /* Bayangan saat fokus */
+    }
+
+    /* Kustomisasi Tombol Simpan */
+    .swal2-confirm {
+        background-color: #4CAF50; /* Warna latar tombol simpan */
+        color: white; /* Warna teks tombol simpan */
+        border-radius: 5px; /* Sudut membulat untuk tombol */
+        padding: 10px 20px; /* Jarak dalam tombol */
+        font-size: 1em; /* Ukuran font tombol simpan */
+    }
+
+    /* Kustomisasi Tombol Batal */
+    .swal2-cancel {
+        background-color: #f44336; /* Warna latar tombol batal */
+        color: white; /* Warna teks tombol batal */
+        border-radius: 5px; /* Sudut membulat untuk tombol */
+        padding: 10px 20px; /* Jarak dalam tombol */
+        font-size: 1em; /* Ukuran font tombol batal */
+    }
+
+    /* Mengubah tampilan tombol saat hover */
+    .swal2-confirm:hover {
+        background-color: #45a049; /* Warna latar tombol simpan saat hover */
+    }
+
+    .swal2-cancel:hover {
+        background-color: #e53935; /* Warna latar tombol batal saat hover */
+    }
+
+        
+        
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="kasir.html" class="icon-kembali">
+    <i class="fas fa-arrow-left"></i>
+</a>
+    <h2>Input Barang</h2>
+    
+     <div class="button-container">
+        <button class="action-btn" onclick="downloadExcel()">
+            <i class="fas fa-download"></i>Download Excel
+        </button>
+        <label class="action-btn" for="uploadExcel">
+            <i class="fas fa-upload"></i>Upload Excel
+        </label>
+        <input type="file" id="uploadExcel" accept=".xlsx" onchange="uploadExcel()">
+    </div>
+    
+    <input type="text" id="kodeBarang" placeholder="Kode Barang">
+    <input type="text" id="namaBarang" placeholder="Nama Barang">
+    <input type="number" id="hargaBeli" placeholder="Harga Beli">
+    <input type="number" id="hargaJual" placeholder="Harga Jual">
+    <input type="number" id="stokBarang" placeholder="Stok Barang">
+    <input type="text" id="kodeToko" placeholder="Kode Toko">
+    <button onclick="tambahBarang()">Tambah Barang</button>
+    
+    <button onclick="window.location.href='cek ulang stok.html'" class="cek-stok-btn">Cek Ulang Stok</button>
+   
+   <button onclick="tambahDiskon()">Tambah Diskon</button>
+   
+   <button onclick="tambahTargetPenjualan()">Tambah Target Penjualan</button> 
+   <button onclick="tampilkanDaftarTarget()">Lihat Daftar Target</button> 
+    <h2>Daftar Barang</h2> 
+        <table id="tabelBarang">
+            <thead>
+                <tr>
+                    <th>Kode Toko</th>
+                    <th>Kode Barang</th>
+                    <th>Nama Barang</th>
+                    <th>Harga Beli</th>
+                    <th>Harga Jual</th>
+                    <th>Stok</th>
+                    <th>Total Terjual</th>
+                    <th>Keuntungan</th>
+                    <th>Persentase Terjual (%)</th>
+                    <th>Target Penjualan</th> <!-- Kolom untuk target penjualan -->
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Data barang akan ditampilkan di sini -->
+            </tbody>
+        </table>
+
+    <script>
+       
+   function tambahTargetPenjualan() {
+    Swal.fire({
+        title: 'Tambah Target Penjualan',
+        html:
+            '<input id="tanggalTarget" type="date" class="swal2-input" placeholder="Tanggal">' +
+            '<input id="namaBarangTarget" class="swal2-input" placeholder="Nama Barang">' +
+            '<input id="jumlahTarget" type="number" class="swal2-input" placeholder="Jumlah Target">',
+        showCancelButton: true,
+        confirmButtonText: 'Simpan',
+        preConfirm: () => {
+            const tanggal = document.getElementById('tanggalTarget').value;
+            const namaBarang = document.getElementById('namaBarangTarget').value;
+            const jumlahTarget = parseInt(document.getElementById('jumlahTarget').value);
+
+            if (!tanggal || !namaBarang || isNaN(jumlahTarget) || jumlahTarget <= 0) {
+                Swal.showValidationMessage('Tanggal, nama barang, dan jumlah target harus diisi dengan benar');
+            } else {
+                return { tanggal, namaBarang, jumlahTarget };
+            }
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            simpanTargetPenjualan(result.value.tanggal, result.value.namaBarang, result.value.jumlahTarget);
+        }
+    });
+}
+
+function simpanTargetPenjualan(tanggal, namaBarang, jumlahTarget) {
+    let barang = JSON.parse(localStorage.getItem('barang')) || []; // Ambil data barang
+    let targets = JSON.parse(localStorage.getItem('targetPenjualan')) || [];
+    
+    // Cek apakah barang ada di dalam data barang
+    const barangExist = barang.some(item => item.nama === namaBarang);
+    
+    if (!barangExist) {
+        Swal.fire('Error', `Barang ${namaBarang} tidak ditemukan. Target penjualan tidak dapat ditambahkan.`, 'error');
+        return; // Keluar dari fungsi jika barang tidak ada
+    }
+
+    const targetExist = targets.find(target => target.tanggal === tanggal && target.namaBarang === namaBarang);
+
+    if (targetExist) {
+        targetExist.jumlahTarget = jumlahTarget; // Update jika target sudah ada
+    } else {
+        targets.push({ tanggal, namaBarang, jumlahTarget });
+    }
+
+    localStorage.setItem('targetPenjualan', JSON.stringify(targets));
+    Swal.fire('Sukses', `Target penjualan untuk ${namaBarang} pada ${tanggal} berhasil ditambahkan: ${jumlahTarget}`, 'success');
+    loadBarang(); // Refresh tabel barang
+}
+
+        function tampilkanDaftarTarget() {
+            Swal.fire({
+                title: 'Daftar Target Penjualan',
+                html:
+                    '<input id="filterTanggal" type="date" class="swal2-input" placeholder="Filter Tanggal">',
+                showCancelButton: true,
+                confirmButtonText: 'Tampilkan',
+                preConfirm: () => {
+                    const filterTanggal = document.getElementById('filterTanggal').value;
+                    return filterTanggal;
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    loadDaftarTarget(result.value);
+                }
+            });
+        }
+
+        function loadDaftarTarget(filterTanggal) {
+            let targets = JSON.parse(localStorage.getItem('targetPenjualan')) || [];
+            let filteredTargets = filterTanggal ? targets.filter(target => target.tanggal === filterTanggal) : targets;
+
+            let daftar = '<ul>';
+            if (filteredTargets.length === 0) {
+                daftar += '<li>Tidak ada target untuk tanggal ini.</li>';
+            } else {
+                filteredTargets.forEach(target => {
+                    daftar += `<li>${target.tanggal} - ${target.namaBarang}: ${target.jumlahTarget}</li>`;
+                });
+            }
+            daftar += '</ul>';
+
+            Swal.fire({
+                title: 'Target Penjualan',
+                html: daftar,
+                confirmButtonText: 'Tutup'
+            });
+        }
+
+        
+    function tambahDiskon() {
+    Swal.fire({
+        title: 'Tambah Diskon',
+        html:
+            '<input id="namaBarangDiskon" class="swal2-input" placeholder="Nama Barang">' +
+            '<input id="persenDiskon" type="number" class="swal2-input" placeholder="Persentase Diskon (Maks 100%)">',
+        showCancelButton: true,
+        confirmButtonText: 'Simpan',
+        preConfirm: () => {
+            const namaBarang = document.getElementById('namaBarangDiskon').value;
+            let persenDiskon = parseFloat(document.getElementById('persenDiskon').value);
+
+            if (!namaBarang || isNaN(persenDiskon)) {
+                Swal.showValidationMessage('Nama barang dan persentase diskon harus diisi');
+            } else if (persenDiskon < 0 || persenDiskon > 100) {
+                Swal.showValidationMessage('Persentase diskon harus antara 0% hingga 100%');
+            } else {
+                return { namaBarang, persenDiskon };
+            }
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            simpanDiskon(result.value.namaBarang, result.value.persenDiskon);
+        }
+    });
+}
+
+
+function simpanDiskon(namaBarang, persenDiskon) {
+    let barang = JSON.parse(localStorage.getItem('barang')) || [];
+    let diskon = JSON.parse(localStorage.getItem('diskon')) || [];
+
+    const item = barang.find(item => item.nama === namaBarang);
+    if (!item) {
+        Swal.fire('Error', 'Barang tidak ditemukan', 'error');
+        return;
+    }
+
+    // Batasi diskon maksimal 100%
+    persenDiskon = Math.min(persenDiskon, 100);
+
+    diskon.push({
+        kode: item.kode,
+        nama: item.nama,
+        persenDiskon: persenDiskon
+    });
+
+    localStorage.setItem('diskon', JSON.stringify(diskon));
+    Swal.fire('Sukses', `Diskon ${persenDiskon}% berhasil ditambahkan pada ${namaBarang}`, 'success');
+}    
+        
+        function tambahBarang() {
+    const kodeBarang = document.getElementById('kodeBarang').value;
+    const namaBarang = document.getElementById('namaBarang').value;
+    const hargaBeli = document.getElementById('hargaBeli').value;
+    const hargaJual = document.getElementById('hargaJual').value;
+    const stokBarang = document.getElementById('stokBarang').value;
+    const kodeToko = document.getElementById('kodeToko').value;
+
+    if (kodeBarang && namaBarang && hargaBeli && hargaJual && stokBarang && kodeToko) {
+        let barang = JSON.parse(localStorage.getItem('barang')) || [];
+        
+        // Cek apakah kode barang sudah ada
+        let existingItem = barang.find(item => item.kode === kodeBarang);
+        if (existingItem) {
+            alert('Kode barang sudah ada. Silakan masukkan kode yang berbeda.');
+        } else {
+            // Tambahkan barang baru
+            barang.push({
+                kode: kodeBarang,
+                nama: namaBarang,
+                hargaBeli: parseFloat(hargaBeli),
+                hargaJual: parseFloat(hargaJual),
+                stok: parseInt(stokBarang),
+                kodeToko: kodeToko,
+                terjual: 0
+            });
+            localStorage.setItem('barang', JSON.stringify(barang));
+
+            // Clear input fields after adding
+            document.getElementById('kodeBarang').value = '';
+            document.getElementById('namaBarang').value = '';
+            document.getElementById('hargaBeli').value = '';
+            document.getElementById('hargaJual').value = '';
+            document.getElementById('stokBarang').value = '';
+            document.getElementById('kodeToko').value = '';
+        }
+    } else {
+        alert('Lengkapi data barang');
+    }
+}
+ 
+        document.addEventListener('DOMContentLoaded', loadBarang);
+
+        // Fungsi untuk menambahkan event listener ketika localStorage berubah
+window.addEventListener('storage', function(event) {
+    if (event.key === 'barang') {
+        loadBarang(); // Panggil loadBarang saat ada perubahan di localStorage untuk kunci 'barang'
+    }
+});
+
+function loadBarang() {
+    let barang = JSON.parse(localStorage.getItem('barang')) || [];
+    let targets = JSON.parse(localStorage.getItem('targetPenjualan')) || [];
+    const tabelBarang = document.getElementById('tabelBarang').getElementsByTagName('tbody')[0]; // Ambil tbody dari tabel
+
+    // Kosongkan tabel sebelum menampilkan data
+    tabelBarang.innerHTML = '';
+
+    let stokHampirHabis = []; // Array untuk menyimpan barang yang stoknya hampir habis
+
+    barang.forEach((item) => {
+        const row = tabelBarang.insertRow();
+        
+        // Tambahkan data ke dalam baris
+        row.insertCell(0).innerText = item.kodeToko; // Kode Toko
+        row.insertCell(1).innerText = item.kode; // Kode Barang
+        row.insertCell(2).innerText = item.nama; // Nama Barang
+        row.insertCell(3).innerText = formatRupiah(item.hargaBeli); // Harga Beli
+        row.insertCell(4).innerText = formatRupiah(item.hargaJual); // Harga Jual
+        row.insertCell(5).innerText = item.stok; // Stok
+        
+        const totalTerjual = item.terjual || 0; // Total barang terjual
+        const keuntungan = (item.hargaJual - item.hargaBeli) * totalTerjual; // Total keuntungan
+        const persentaseTerjual = item.stok > 0 ? ((totalTerjual / item.stok) * 100).toFixed(2) : 0; // Persentase terjual
+        const targetPenjualanHariIni = targets.find(target => target.namaBarang === item.nama); // Cek target penjualan
+        const persentaseTarget = targetPenjualanHariIni ? ((totalTerjual / targetPenjualanHariIni.jumlahTarget) * 100).toFixed(2) : 0; // Persentase target
+
+        row.insertCell(6).innerText = totalTerjual; // Total Terjual
+        row.insertCell(7).innerText = formatRupiah(keuntungan); // Keuntungan
+        row.insertCell(8).innerText = `${persentaseTerjual}%`; // Persentase Terjual
+        row.insertCell(9).innerText = `${persentaseTarget}%`; // Persentase Target
+
+        // Tambahkan sel aksi di kolom terakhir
+        const aksiCell = row.insertCell(10); 
+
+        // Tombol Edit
+        const editBtn = document.createElement('button');
+        editBtn.classList.add('action-btn', 'edit-btn');
+        editBtn.innerHTML = '<i class="fas fa-edit"></i>Edit';
+        editBtn.onclick = () => editBarang(item.kode); // Ganti index dengan item.kode jika perlu
+        aksiCell.appendChild(editBtn);
+
+        // Tombol Hapus
+        const hapusBtn = document.createElement('button');
+        hapusBtn.classList.add('action-btn', 'hapus-btn');
+        hapusBtn.innerHTML = '<i class="fas fa-trash"></i>Hapus';
+        hapusBtn.onclick = () => hapusBarang(item.kode); // Ganti index dengan item.kode jika perlu
+        aksiCell.appendChild(hapusBtn);
+
+        // Cek jika stok 5 atau kurang
+        if (item.stok <= 5) {
+            stokHampirHabis.push(`${item.nama} (Stok: ${item.stok})`);
+        }
+    });
+
+    // Tampilkan notifikasi stok hampir habis jika ada barang dengan stok 5 atau kurang
+    if (stokHampirHabis.length > 0) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Stok Hampir Habis',
+            html: `
+                <p>Berikut daftar barang yang stoknya 5 atau kurang:</p>
+                <ul>${stokHampirHabis.map(item => `<li>${item}</li>`).join('')}</ul>
+            `,
+            confirmButtonText: 'OK'
+        });
+    }
+}
+
+        function formatRupiah(angka) {
+            // Format angka ke format rupiah
+            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(angka);
+        }
+
+
+
+function formatRupiah(angka) {
+    // Menggunakan toFixed(0) untuk menghilangkan angka desimal
+    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
+}
+        
+        function hapusBarang(index) {
+            Swal.fire({
+                title: 'Konfirmasi',
+                text: 'Apakah Anda yakin ingin menghapus barang ini?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    let barang = JSON.parse(localStorage.getItem('barang')) || [];
+                    barang.splice(index, 1);
+                    localStorage.setItem('barang', JSON.stringify(barang));
+                    loadBarang();
+                    Swal.fire('Berhasil', 'Barang berhasil dihapus', 'success');
+                } else {
+                    Swal.fire('Batal', 'Penghapusan dibatalkan', 'info');
+                }
+            });
+        }
+
+        function downloadExcel() {
+    const tabelBarang = document.getElementById('tabelBarang').getElementsByTagName('tbody')[0]; // Ambil tbody dari tabel
+    const rows = tabelBarang.getElementsByTagName('tr'); // Ambil semua baris
+    let worksheet_data = [['Kode Toko', 'Kode Barang', 'Nama Barang', 'Harga Beli', 'Harga Jual', 'Stok', 'Total Terjual', 'Keuntungan', 'Persentase Terjual', 'Target Penjualan', 'Persentase Target']];
+
+    let targets = JSON.parse(localStorage.getItem('targetPenjualan')) || []; // Ambil target penjualan dari localStorage
+
+    // Loop melalui setiap baris untuk mengambil data yang ditampilkan
+    for (let row of rows) {
+        const cells = row.getElementsByTagName('td');
+        const kodeToko = cells[0].innerText; // Kode Toko
+        const kodeBarang = cells[1].innerText; // Kode Barang
+        const namaBarang = cells[2].innerText; // Nama Barang
+        const hargaBeli = parseFloat(cells[3].innerText.replace(/[^0-9.-]+/g, "")); // Hapus format rupiah
+        const hargaJual = parseFloat(cells[4].innerText.replace(/[^0-9.-]+/g, "")); // Hapus format rupiah
+        const stok = parseInt(cells[5].innerText); // Stok
+        const totalTerjual = parseInt(cells[6].innerText); // Total Terjual
+        const keuntungan = (hargaJual - hargaBeli) * totalTerjual; // Hitung total keuntungan
+        const persentaseTerjual = stok > 0 ? ((totalTerjual / stok) * 100).toFixed(2) : 0; // Persentase Terjual
+
+        // Cek apakah ada target penjualan untuk barang ini
+        const targetPenjualanHariIni = targets.find(target => target.namaBarang === namaBarang);
+        const jumlahTarget = targetPenjualanHariIni ? targetPenjualanHariIni.jumlahTarget : 'Tidak Ada';
+        const persentaseTarget = targetPenjualanHariIni ? ((totalTerjual / targetPenjualanHariIni.jumlahTarget) * 100).toFixed(2) : '0';
+
+        worksheet_data.push([kodeToko, kodeBarang, namaBarang, hargaBeli, hargaJual, stok, totalTerjual, keuntungan, `${persentaseTerjual}%`, jumlahTarget, `${persentaseTarget}%`]);
+    }
+
+    // Konversi data menjadi worksheet dan unduh file Excel
+    let workbook = XLSX.utils.book_new();
+    let worksheet = XLSX.utils.aoa_to_sheet(worksheet_data);
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Data Barang');
+    XLSX.writeFile(workbook, 'data_barang.xlsx');
+}
+
+ function uploadExcel() {
+    const fileInput = document.getElementById('uploadExcel');
+    const file = fileInput.files[0];
+    const reader = new FileReader();
+
+    reader.onload = (event) => {
+        const data = new Uint8Array(event.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+
+        const firstSheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[firstSheetName];
+
+        const json = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+        let barang = JSON.parse(localStorage.getItem('barang')) || [];
+        let targets = JSON.parse(localStorage.getItem('targetPenjualan')) || [];
+
+        json.forEach((row, index) => {
+            if (index > 0) { // Lewati header
+                const item = {
+                    kodeToko: row[0] || '', // Kode Toko
+                    kode: row[1] || '', // Kode Barang
+                    nama: row[2] || '', // Nama Barang
+                    hargaBeli: parseFloat(row[3]) || 0, // Harga Beli
+                    hargaJual: parseFloat(row[4]) || 0, // Harga Jual
+                    stok: parseInt(row[5]) || 0, // Stok
+                    terjual: parseInt(row[6]) || 0 // Total Terjual
+                };
+
+                // Menangani target penjualan
+                const target = {
+                    namaBarang: row[2] || '', // Nama Barang
+                    jumlahTarget: parseInt(row[9]) || 0 // Jumlah Target Penjualan
+                };
+
+                // Cek jika barang dengan kode yang sama sudah ada
+                const existingItemIndex = barang.findIndex(b => b.kode === item.kode);
+                if (existingItemIndex >= 0) {
+                    // Update barang yang sudah ada
+                    barang[existingItemIndex] = item;
+                } else {
+                    // Tambahkan barang baru
+                    barang.push(item);
+                }
+
+                // Cek jika target dengan nama barang yang sama sudah ada
+                const existingTargetIndex = targets.findIndex(t => t.namaBarang === target.namaBarang);
+                if (existingTargetIndex >= 0) {
+                    // Update target penjualan yang sudah ada
+                    targets[existingTargetIndex].jumlahTarget = target.jumlahTarget;
+                } else {
+                    // Tambahkan target penjualan baru
+                    targets.push(target);
+                }
+            }
+        });
+
+        // Simpan barang dan target ke localStorage
+        localStorage.setItem('barang', JSON.stringify(barang));
+        localStorage.setItem('targetPenjualan', JSON.stringify(targets));
+        
+        loadBarang(); // Memuat ulang tabel barang
+        Swal.fire('Berhasil', 'Data barang dan target penjualan berhasil diupload!', 'success');
+    };
+
+    reader.readAsArrayBuffer(file);
+}
+
+function cariBarang() {
+    const searchQuery = document.getElementById('searchInput').value.toLowerCase();
+    const barang = JSON.parse(localStorage.getItem('barang')) || [];
+    const tabelBarang = document.getElementById('tabelBarang').getElementsByTagName('tbody')[0]; 
+
+    tabelBarang.innerHTML = ''; // Kosongkan tabel sebelum menampilkan hasil pencarian
+
+    barang.forEach((item) => {
+        if (item.nama.toLowerCase().includes(searchQuery) || item.kode.toLowerCase().includes(searchQuery)) {
+            const row = tabelBarang.insertRow();
+            row.insertCell(0).innerText = item.kodeToko;
+            row.insertCell(1).innerText = item.kode;
+            row.insertCell(2).innerText = item.nama;
+            row.insertCell(3).innerText = formatRupiah(item.hargaBeli);
+            row.insertCell(4).innerText = formatRupiah(item.hargaJual);
+            row.insertCell(5).innerText = item.stok;
+            
+            const totalTerjual = item.terjual;
+            const keuntungan = (item.hargaJual - item.hargaBeli) * totalTerjual;
+            const persentaseTerjual = item.stok > 0 ? ((totalTerjual / item.stok) * 100).toFixed(2) : 0;
+
+            row.insertCell(6).innerText = totalTerjual;
+            row.insertCell(7).innerText = formatRupiah(keuntungan);
+            row.insertCell(8).innerText = `${persentaseTerjual}%`;
+
+            const aksiCell = row.insertCell(9);
+            
+            const editBtn = document.createElement('button');
+            editBtn.classList.add('action-btn', 'edit-btn');
+            editBtn.innerHTML = '<i class="fas fa-edit"></i>Edit';
+            editBtn.onclick = () => editBarang(index);
+            aksiCell.appendChild(editBtn);
+
+            const hapusBtn = document.createElement('button');
+            hapusBtn.classList.add('action-btn', 'delete-btn');
+            hapusBtn.innerHTML = '<i class="fas fa-trash-alt"></i>Hapus';
+            hapusBtn.onclick = () => hapusBarang(index);
+            aksiCell.appendChild(hapusBtn);
+        }
+    });
+}
+
+
+function editBarang(kodeBarang) {
+            let barang = JSON.parse(localStorage.getItem('barang')) || [];
+            const item = barang.find(item => item.kode === kodeBarang);
+
+            if (item) {
+                Swal.fire({
+                    title: 'Edit Barang',
+                    html: `
+                        <input id="swal-kodeBarang" class="swal2-input" value="${item.kode}" placeholder="Kode Barang" readonly>
+                        <input id="swal-namaBarang" class="swal2-input" value="${item.nama}" placeholder="Nama Barang">
+                        <input id="swal-hargaBeli" class="swal2-input" value="${item.hargaBeli}" placeholder="Harga Beli" type="number">
+                        <input id="swal-hargaJual" class="swal2-input" value="${item.hargaJual}" placeholder="Harga Jual" type="number">
+                        <input id="swal-stokBarang" class="swal2-input" value="${item.stok}" placeholder="Stok Barang" type="number">
+                        <input id="swal-kodeToko" class="swal2-input" value="${item.kodeToko}" placeholder="Kode Toko">
+                    `,
+                    focusConfirm: false,
+                    confirmButtonText: 'Simpan',
+                    cancelButtonText: 'Batal',
+                    showCancelButton: true,
+                    confirmButtonColor: '#4CAF50',
+                    cancelButtonColor: '#f44336',
+                    backdrop: `rgba(0, 0, 0, 0.5)`,
+                    preConfirm: () => {
+                        const namaBarang = document.getElementById('swal-namaBarang').value;
+                        const hargaBeli = document.getElementById('swal-hargaBeli').value;
+                        const hargaJual = document.getElementById('swal-hargaJual').value;
+                        const stokBarang = document.getElementById('swal-stokBarang').value;
+                        const kodeToko = document.getElementById('swal-kodeToko').value;
+
+                        if (!namaBarang || !hargaBeli || !hargaJual || !stokBarang || !kodeToko) {
+                            Swal.showValidationMessage('Semua data harus diisi');
+                            return false;
+                        }
+
+                        return { namaBarang, hargaBeli, hargaJual, stokBarang, kodeToko };
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        updateBarang(kodeBarang, result.value);
+                    }
+                });
+            } else {
+                Swal.fire('Error', 'Barang tidak ditemukan', 'error');
+            }
+        }
+
+        function updateBarang(kodeBarang, updatedData) {
+            let barang = JSON.parse(localStorage.getItem('barang')) || [];
+            let itemIndex = barang.findIndex(item => item.kode === kodeBarang);
+            if (itemIndex !== -1) {
+                barang[itemIndex] = {
+                    ...barang[itemIndex],
+                    nama: updatedData.namaBarang,
+                    hargaBeli: parseFloat(updatedData.hargaBeli),
+                    hargaJual: parseFloat(updatedData.hargaJual),
+                    stok: parseInt(updatedData.stokBarang),
+                    kodeToko: updatedData.kodeToko
+                };
+                localStorage.setItem('barang', JSON.stringify(barang));
+
+                Swal.fire('Berhasil', 'Data barang berhasil diperbarui', 'success');
+                loadBarang(); // Memuat ulang tabel barang
+            }
+        }
+
+        
+    </script>
+</body>
+</html>
